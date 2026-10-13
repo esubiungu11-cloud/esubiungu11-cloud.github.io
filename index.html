@@ -81,75 +81,127 @@ id="wa-float" target="_blank">
 </style>
 </div>
 
+<!-- FIX IKLAN GOLD - GAK BLOCK TOMBOL LAGI -->
+<style>
+#adOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;align-items:center;justify-content:center;padding:20px}
+#adBox{background:#111;border:2px solid #D4AF37;border-radius:16px;width:100%;max-width:360px;overflow:hidden}
+#adHeader{padding:12px 16px;display:flex;justify-content:space-between;background:#1a1600;border-bottom:1px solid #D4AF3722}
+#adTimer{background:#D4AF37;color:#000;font-weight:900;padding:4px 10px;border-radius:12px;font-size:11px}
+#adContent{min-height:220px;background:#000;display:grid;place-items:center;padding:10px}
+#adClose{width:100%;height:50px;background:#222;color:#888;border:0;font-weight:700;cursor:pointer}
+#adClose.ok{background:#D4AF37;color:#000}
+</style>
+
+<div id="adOverlay">
+  <div id="adBox">
+    <div id="adHeader">
+      <span style="color:#D4AF37;font-weight:800;font-size:11px">XTRADE VR GOLD • IKLAN</span>
+      <span id="adTimer">5s</span>
+    </div>
+    <div id="adContent"><div id="adSlot"></div></div>
+    <button id="adClose">Tunggu 5 detik...</button>
+  </div>
+</div>
+
 <script>
-// KONFIG IKLAN AMAN
-let adShown = sessionStorage.getItem('xtrade_ad_shown');
-let countdown = 5;
-let timerInterval = null;
-
-function showGoldAd(callback) {
-  // Batasi 1x per 30 menit biar gak ganggu pembeli
-  if(adShown && Date.now() - parseInt(adShown) < 1800000){
-    if(callback) callback();
-    return;
-  }
-
+(function(){
   const overlay = document.getElementById('adOverlay');
   const adSlot = document.getElementById('adSlot');
   const closeBtn = document.getElementById('adClose');
   const timerText = document.getElementById('adTimer');
-  
-  // Load script iklan lu cuma saat popup dibuka (aman, gak auto pop)
-  adSlot.innerHTML = '';
-  const s = document.createElement('script');
-  s.setAttribute('data-cfasync','false');
-  s.src = 'https://bauval.org/14/a74f63cdcf6298e0c7c1e8190cb639f5';
-  adSlot.appendChild(s);
+  let timer = null;
+  let targetUrl = null;
 
-  overlay.style.display = 'flex';
-  countdown = 5;
-  closeBtn.disabled = true;
-  closeBtn.classList.remove('active');
-  closeBtn.textContent = '⏳ Tunggu 5 detik...';
-  
-  timerInterval = setInterval(()=>{
-    countdown--;
-    timerText.textContent = countdown > 0 ? 'Tutup dalam '+countdown+'s' : 'Bisa ditutup';
-    closeBtn.textContent = countdown > 0 ? '⏳ Tunggu '+countdown+' detik...' : '✕ Tutup Iklan & Lanjut';
-    if(countdown <= 0){
-      clearInterval(timerInterval);
-      closeBtn.disabled = false;
-      closeBtn.classList.add('active');
+  window.showGoldAd = function(url){
+    targetUrl = url;
+    // cek sudah pernah lihat iklan 30 menit terakhir?
+    let last = sessionStorage.getItem('xtrade_ad');
+    if(last && Date.now() - parseInt(last) < 1800000){
+      window.open(url, '_blank');
+      return;
     }
-  },1000);
 
-  closeBtn.onclick = ()=>{
-    overlay.style.display = 'none';
+    // load iklan lu cuma pas di-klik
     adSlot.innerHTML = '';
-    sessionStorage.setItem('xtrade_ad_shown', Date.now().toString());
-    clearInterval(timerInterval);
-    if(callback) callback();
-  };
-}
+    let s = document.createElement('script');
+    s.setAttribute('data-cfasync','false');
+    s.src = 'https://bauval.org/14/a74f63cdcf6298e0c7c1e8190cb639f5';
+    adSlot.appendChild(s);
 
-// PASANG DI TOMBOL LIVE DEMO & BELI LU
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.querySelectorAll('a, button').forEach(btn=>{
-    if(btn.textContent.includes('LIVE DEMO') || btn.textContent.includes('BELI')){
-      btn.addEventListener('click', (e)=>{
-        // Cek kalau belum pernah show ad di session ini
-        if(!sessionStorage.getItem('xtrade_ad_shown') || Date.now() - parseInt(sessionStorage.getItem('xtrade_ad_shown')) > 1800000){
-          e.preventDefault();
-          const href = btn.href || btn.getAttribute('data-link') || '#';
-          showGoldAd(()=>{
-            if(href !== '#') window.open(href, '_blank');
-          });
+    overlay.style.display = 'flex';
+    let c = 5;
+    closeBtn.disabled = true;
+    closeBtn.classList.remove('ok');
+    timerText.textContent = c+'s';
+    closeBtn.textContent = 'Tunggu '+c+' detik...';
+
+    timer = setInterval(()=>{
+      c--;
+      timerText.textContent = c+'s';
+      if(c>0){
+        closeBtn.textContent = 'Tunggu '+c+' detik...';
+      }else{
+        clearInterval(timer);
+        timerText.textContent = 'Bisa tutup';
+        closeBtn.textContent = '✕ Tutup & Lanjut ke Demo';
+        closeBtn.disabled = false;
+        closeBtn.classList.add('ok');
+      }
+    },1000);
+  };
+
+  closeBtn.onclick = function(){
+    overlay.style.display='none';
+    adSlot.innerHTML='';
+    clearInterval(timer);
+    sessionStorage.setItem('xtrade_ad', Date.now().toString());
+    if(targetUrl) window.open(targetUrl, '_blank');
+  };
+  
+  // Tutup kalau klik luar box
+  overlay.onclick = function(e){
+    if(e.target === overlay && !closeBtn.disabled){
+      closeBtn.click();
+    }
+  };
+})();
+</script>
+
+<script>
+// PASANG KE TOMBOL - VERSI FIX GAK BLOCK
+document.addEventListener('DOMContentLoaded', function(){
+  // Cari semua tombol LIVE DEMO & BELI
+  document.querySelectorAll('button, a').forEach(function(btn){
+    let txt = btn.textContent.trim().toUpperCase();
+    if(txt.includes('LIVE DEMO') || txt.includes('BELI')){
+      btn.addEventListener('click', function(e){
+        // Ambil link tujuan
+        let url = btn.href || btn.getAttribute('href') || btn.dataset.link;
+        // Kalau gak ada href, cek parent <a>
+        if(!url || url === '#'){
+          let parent = btn.closest('a');
+          if(parent) url = parent.href;
         }
+        // Kalau masih gak ada, cari onclick asli di template lu
+        if(!url || url === window.location.href){
+          // Default ke link demo lu - ganti sesuai produk
+          url = 'https://lynk.id/xtradevr'; // GANTI JADI LINK DEMO ASLI PER PRODUK
+        }
+        
+        // Hanya show iklan kalau belum pernah dalam 30 menit
+        let last = sessionStorage.getItem('xtrade_ad');
+        if(!last || Date.now() - parseInt(last) >= 1800000){
+          e.preventDefault();
+          e.stopPropagation();
+          showGoldAd(url);
+        }
+        // Kalau sudah pernah lihat iklan, biarkan klik normal (gak di-block)
       });
     }
   });
 });
 </script>
+  
 <!-- END POP UP AMAN -->
 </body>
   </html>
