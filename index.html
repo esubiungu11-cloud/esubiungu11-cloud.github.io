@@ -81,126 +81,79 @@ id="wa-float" target="_blank">
 </style>
 </div>
 
-<!-- FIX IKLAN GOLD - GAK BLOCK TOMBOL LAGI -->
+<!-- POP UP 5 DETIK - KLIK DEMO - MINIMAL -->
 <style>
-#adOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;align-items:center;justify-content:center;padding:20px}
-#adBox{background:#111;border:2px solid #D4AF37;border-radius:16px;width:100%;max-width:360px;overflow:hidden}
-#adHeader{padding:12px 16px;display:flex;justify-content:space-between;background:#1a1600;border-bottom:1px solid #D4AF3722}
-#adTimer{background:#D4AF37;color:#000;font-weight:900;padding:4px 10px;border-radius:12px;font-size:11px}
-#adContent{min-height:220px;background:#000;display:grid;place-items:center;padding:10px}
-#adClose{width:100%;height:50px;background:#222;color:#888;border:0;font-weight:700;cursor:pointer}
-#adClose.ok{background:#D4AF37;color:#000}
+#pop5{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:99999;display:none;align-items:center;justify-content:center}
+#pop5Box{background:#111;border:2px solid #D4AF37;border-radius:16px;width:90%;max-width:360px;overflow:hidden}
+#pop5Head{padding:12px 16px;background:#1a1600;display:flex;justify-content:space-between;color:#D4AF37;font-weight:800;font-size:12px}
+#pop5Close{width:100%;height:50px;background:#222;color:#888;border:0;font-weight:800}
+#pop5Close.on{background:#D4AF37;color:#000}
 </style>
 
-<div id="adOverlay">
-  <div id="adBox">
-    <div id="adHeader">
-      <span style="color:#D4AF37;font-weight:800;font-size:11px">XTRADE VR GOLD • IKLAN</span>
-      <span id="adTimer">5s</span>
-    </div>
-    <div id="adContent"><div id="adSlot"></div></div>
-    <button id="adClose">Tunggu 5 detik...</button>
+<div id="pop5">
+  <div id="pop5Box">
+    <div id="pop5Head"><span>XTRADE VR - IKLAN</span><span id="pop5Timer">5s</span></div>
+    <div id="pop5Ad" style="min-height:250px;background:#000;display:grid;place-items:center"></div>
+    <button id="pop5Close">Tunggu 5 detik...</button>
   </div>
 </div>
 
 <script>
-(function(){
-  const overlay = document.getElementById('adOverlay');
-  const adSlot = document.getElementById('adSlot');
-  const closeBtn = document.getElementById('adClose');
-  const timerText = document.getElementById('adTimer');
-  let timer = null;
-  let targetUrl = null;
+let popNextUrl = null;
+let popTimer = null;
 
-  window.showGoldAd = function(url){
-    targetUrl = url;
-    // cek sudah pernah lihat iklan 30 menit terakhir?
-    let last = sessionStorage.getItem('xtrade_ad');
-    if(last && Date.now() - parseInt(last) < 1800000){
-      window.open(url, '_blank');
-      return;
+function show5SecAd(url){
+  popNextUrl = url;
+  const pop = document.getElementById('pop5');
+  const adBox = document.getElementById('pop5Ad');
+  const closeBtn = document.getElementById('pop5Close');
+  const timerTxt = document.getElementById('pop5Timer');
+
+  // LOAD IKLAN LU
+  adBox.innerHTML = '';
+  let s = document.createElement('script');
+  s.setAttribute('data-cfasync','false');
+  s.src = 'https://bauval.org/14/a74f63cdcf6298e0c7c1e8190cb639f5';
+  adBox.appendChild(s);
+
+  pop.style.display = 'flex';
+  let c = 5;
+  closeBtn.disabled = true;
+  closeBtn.classList.remove('on');
+  timerTxt.textContent = c+'s';
+  closeBtn.textContent = 'Tunggu '+c+' detik...';
+
+  popTimer = setInterval(()=>{
+    c--;
+    timerTxt.textContent = c>0 ? c+'s' : 'Tutup';
+    if(c>0){
+      closeBtn.textContent = 'Tunggu '+c+' detik...';
+    }else{
+      clearInterval(popTimer);
+      closeBtn.textContent = 'Tutup & Lanjut Demo';
+      closeBtn.disabled = false;
+      closeBtn.classList.add('on');
     }
+  },1000);
+}
 
-    // load iklan lu cuma pas di-klik
-    adSlot.innerHTML = '';
-    let s = document.createElement('script');
-    s.setAttribute('data-cfasync','false');;
-    adSlot.appendChild(s);
+document.getElementById('pop5Close').onclick = function(){
+  document.getElementById('pop5').style.display = 'none';
+  document.getElementById('pop5Ad').innerHTML = '';
+  clearInterval(popTimer);
+  if(popNextUrl) window.open(popNextUrl, '_blank');
+};
 
-    overlay.style.display = 'flex';
-    let c = 5;
-    closeBtn.disabled = true;
-    closeBtn.classList.remove('ok');
-    timerText.textContent = c+'s';
-    closeBtn.textContent = 'Tunggu '+c+' detik...';
-
-    timer = setInterval(()=>{
-      c--;
-      timerText.textContent = c+'s';
-      if(c>0){
-        closeBtn.textContent = 'Tunggu '+c+' detik...';
-      }else{
-        clearInterval(timer);
-        timerText.textContent = 'Bisa tutup';
-        closeBtn.textContent = '✕ Tutup & Lanjut ke Demo';
-        closeBtn.disabled = false;
-        closeBtn.classList.add('ok');
-      }
-    },1000);
-  };
-
-  closeBtn.onclick = function(){
-    overlay.style.display='none';
-    adSlot.innerHTML='';
-    clearInterval(timer);
-    sessionStorage.setItem('xtrade_ad', Date.now().toString());
-    if(targetUrl) window.open(targetUrl, '_blank');
-  };
-  
-  // Tutup kalau klik luar box
-  overlay.onclick = function(e){
-    if(e.target === overlay && !closeBtn.disabled){
-      closeBtn.click();
-    }
-  };
-})();
-</script>
-
-<script>
-// PASANG KE TOMBOL - VERSI FIX GAK BLOCK
-document.addEventListener('DOMContentLoaded', function(){
-  // Cari semua tombol LIVE DEMO & BELI
-  document.querySelectorAll('button, a').forEach(function(btn){
-    let txt = btn.textContent.trim().toUpperCase();
-    if(txt.includes('LIVE DEMO') || txt.includes('BELI')){
-      btn.addEventListener('click', function(e){
-        // Ambil link tujuan
-        let url = btn.href || btn.getAttribute('href') || btn.dataset.link;
-        // Kalau gak ada href, cek parent <a>
-        if(!url || url === '#'){
-          let parent = btn.closest('a');
-          if(parent) url = parent.href;
-        }
-        // Kalau masih gak ada, cari onclick asli di template lu
-        if(!url || url === window.location.href){
-          // Default ke link demo lu - ganti sesuai produk
-          url = 'https://lynk.id/xtradevr'; // GANTI JADI LINK DEMO ASLI PER PRODUK
-        }
-        
-        // Hanya show iklan kalau belum pernah dalam 30 menit
-        let last = sessionStorage.getItem('xtrade_ad');
-        if(!last || Date.now() - parseInt(last) >= 1800000){
-          e.preventDefault();
-          e.stopPropagation();
-          showGoldAd(url);
-        }
-        // Kalau sudah pernah lihat iklan, biarkan klik normal (gak di-block)
-      });
-    }
-  });
+// PASANG DI TOMBOL LIVE DEMO AJA
+document.querySelectorAll('button').forEach(b=>{
+  if(b.textContent.toUpperCase().includes('LIVE DEMO')){
+    b.addEventListener('click', function(e){
+      e.preventDefault();
+      let link = b.dataset.link || b.closest('a')?.href || 'https://lynk.id/broofficial';
+      show5SecAd(link);
+    });
+  }
 });
 </script>
-  
-<!-- END POP UP AMAN -->
 </body>
   </html>
