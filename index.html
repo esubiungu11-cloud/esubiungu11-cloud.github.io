@@ -148,65 +148,60 @@ document.querySelectorAll('button').forEach(b=>{
     });
   }
 });
+<!-- PREMIUM CHAT INPUT - XTRADE VR STYLE -->
 <style>
-.xtrade-chat{
-  position:fixed;
-  bottom:15px;
-  left:10px;
-  right:10px;
-  z-index:999999;
-  display:flex;
-  justify-content:center;
+.xtrade-chat {
+  position: fixed;
+  bottom: 20px;
+  left: 15px;
+  right: 15px;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
 }
-.xtrade-box{
-  display:flex;
-  align-items:center;
-  background:#111;
-  border:2px solid #FFD700;
-  width:100%;
-  max-width:520px;
-  padding:12px 16px;
-  border-radius:35px;
-  gap:10px;
-  box-shadow:0 0 20px rgba(255,215,0,0.4);
+.xtrade-box {
+  display: flex;
+  align-items: center;
+  background: #111;
+  border: 2px solid #FFD700;
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 15px;
+  border-radius: 30px;
+  gap: 10px;
+  box-shadow: 0 0 20px rgba(255,215,0,0.3);
 }
-.xtrade-box input{
-  background:transparent;
-  border:none;
-  flex:1;
-  color:white;
-  outline:none;
-  font-size:14px;
+.xtrade-box input {
+  background: transparent;
+  border: none;
+  flex: 1;
+  color: #FFD700;
+  outline: none;
 }
-.xtrade-btn{
-  background:#FFD700;
-  border:none;
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  font-weight:bold;
-  color:#000;
+.xtrade-box input::placeholder {
+  color: #FFD700;
+  opacity: 0.6;
 }
-.xtrade-icon{color:#FFD700;font-size:16px;}
+.xtrade-btn {
+  background: #FFD700;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  color: #000;
+  font-weight: bold;
+}
 </style>
 
 <div class="xtrade-chat">
   <div class="xtrade-box">
     <button class="xtrade-btn">+</button>
-    <input id="tanyaInput" type="text" placeholder="Tanya produk...">
-    <span class="xtrade-icon">📷</span>
-    <span class="xtrade-icon">😊</span>
-    <button class="xtrade-btn" onclick="kirimWA()">✈️</button>
+    <input type="text" placeholder="Tanya produk...">
+    <span style="color:#FFD700">📷</span>
+    <span style="color:#FFD700">😊</span>
+    <button class="xtrade-btn">✈️</button>
   </div>
 </div>
-
-<script>
-function kirimWA(){
-  let t = document.getElementById('tanyaInput').value;
-  if(t == "") t = "Halo, mau tanya produk XTRADE VR";
-  let wa = "https://wa.me/6289501857938?text=" + encodeURIComponent(t);
-  window.open(wa, "_blank");
-}
-</script>
+ <style>
 </body>
 </html>
