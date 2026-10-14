@@ -154,11 +154,77 @@ document.querySelectorAll('button').forEach(b=>{
     });
   }
 });
+<style>
+/* HAPUS TOMBOL WA IJO YANG LAMA */
+a[href*="wa.me"]{display:none !important}
+.wa-float, .whatsapp-float, #wa-btn, .btn-wa{display:none !important}
+
+/* PREMIUM CHAT CLEAN - XTRADE VR GOLD */
+.xtrade-chat {
+  position: fixed;
+  bottom: 20px;
+  left: 12px;
+  right: 12px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+}
+.xtrade-box {
+  display: flex;
+  align-items: center;
+  background: #111;
+  border: 2px solid #FFD700;
+  width: 100%;
+  max-width: 520px;
+  padding: 10px 14px;
+  border-radius: 30px;
+  gap: 10px;
+  box-shadow: 0 0 25px rgba(255,215,0,0.4);
+}
+.xtrade-box input {
+  background: transparent;
+  border: none;
+  flex: 1;
+  color: #fff;
+  outline: none;
+  font-size: 14px;
+}
+.xtrade-box input::placeholder {
+  color: #888;
+}
+.xtrade-btn {
+  background: #FFD700;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+}
+.xtrade-icon {
+  color: #FFD700;
+  font-size: 18px;
+  cursor: pointer;
+}
+</style>
+
+<div class="xtrade-chat">
+  <div class="xtrade-box">
+    <button class="xtrade-btn">+</button>
+    <input id="tanyaInput" type="text" placeholder="Tanya produk...">
+    <span class="xtrade-icon">📷</span>
+    <span class="xtrade-icon">📎</span>
+    <span class="xtrade-icon">😊</span>
+    <button class="xtrade-btn" onclick="kirimWA()">✈️</button>
+    <button class="xtrade-btn">🎤</button>
+  </div>
+</div>
+
 <script>
 function kirimWA(){
-  let input = document.getElementById('tanyaInput');
-  let tanya = input.value;
-  if(tanya == "") tanya = "Halo king, mau tanya produk XTRADE VR";
+  let tanya = document.getElementById('tanyaInput').value;
+  if(tanya == "") tanya = "Halo, mau tanya produk XTRADE VR";
   let wa = "https://wa.me/6289501857938?text=" + encodeURIComponent(tanya);
   window.open(wa, "_blank");
 }
